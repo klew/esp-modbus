@@ -159,8 +159,11 @@ static mb_err_enum_t mbs_register_default_handlers(mb_base_t *inst)
 static mb_err_enum_t mbs_unregister_handlers(mb_base_t *inst)
 {
     mbs_object_t *mbs_obj = MB_GET_OBJ_CTX(inst, mbs_object_t, base);
-    (void)mb_delete_command_handlers(&mbs_obj->handler_descriptor);
-    mbs_obj->handler_descriptor.instance = NULL;
+    CRITICAL_SECTION(mbs_obj->handler_descriptor.lock) {
+        ESP_LOGD(TAG, "Close %s command handlers.", mbs_obj->base.descr.parent_name);
+        (void)mb_delete_command_handlers(&mbs_obj->handler_descriptor);
+        mbs_obj->handler_descriptor.instance = NULL;
+    }
     CRITICAL_SECTION_CLOSE(mbs_obj->handler_descriptor.lock);
     return MB_ENOERR;
 }
@@ -397,7 +400,10 @@ mb_err_enum_t mbs_enable(mb_base_t *inst)
 mb_err_enum_t mbs_disable(mb_base_t *inst)
 {
     mb_err_enum_t status = MB_ENOERR;
-    mbs_object_t *mbs_obj = MB_GET_OBJ_CTX(inst, mbs_object_t, base);;
+    mbs_object_t *mbs_obj = MB_GET_OBJ_CTX(inst, mbs_object_t, base);
+    CRITICAL_SECTION(mbs_obj->handler_descriptor.lock) {
+        ESP_LOGW(TAG, "The function handler for %s object is unlocked.", inst->descr.parent_name);
+    }
     CRITICAL_SECTION(inst->lock) {
         if (mbs_obj->cur_state == STATE_ENABLED) {
             MB_OBJ(mbs_obj->base.transp_obj)->frm_stop(mbs_obj->base.transp_obj);

@@ -41,8 +41,8 @@
 #define MB_REG_HOLDING_START_AREA2_SIZE     ((size_t)((HOLD_OFFSET(holding_area2_end) - HOLD_OFFSET(holding_u8_a)) << 1))
 
 #define MB_PAR_INFO_GET_TOUT                (10) // Timeout for get parameter info
-#define MB_CHAN_DATA_MAX_VAL                (6)
-#define MB_CHAN_DATA_OFFSET                 (1.2f)
+#define MB_CHAN_DATA_MAX_VAL                (60)
+#define MB_CHAN_DATA_OFFSET                 (10.1f)
 
 #define MB_READ_MASK                        (MB_EVENT_INPUT_REG_RD \
                                                 | MB_EVENT_HOLDING_REG_RD \
